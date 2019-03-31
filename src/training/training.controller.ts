@@ -27,6 +27,6 @@ export class TrainingController {
     async getTrainings(@Headers('authorization') token: string) {
         const jwt = this.authService.decodeJwt(token.slice(7));
         const user = await this.userService.findById(jwt.sub);
-        return await this.trainingService.getAll(user);
+        return user.trainings;
     }
 }

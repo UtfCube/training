@@ -32,15 +32,10 @@ export class TrainingService {
             const record = new History();
             record.exercise = exercise;
             record.training = training;
-            //record.user = user;
             record.repeat_number = Math.floor(Math.random() * (100 - 10)) + 10;
             await this.historyRepository.save(record);
         }
         const tmp = await this.trainingRepository.findOne(training.id);
         return tmp;
-    }
-
-    async getAll(user: User) {
-        return user.trainings;
     }
 }
