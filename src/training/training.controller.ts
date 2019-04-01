@@ -4,7 +4,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from 'src/auth/auth.service';
 import { CreateTrainingDto } from './dto/create-training.dto';
 import { UserService } from 'src/user/user.service';
-import { ExtractJwt } from 'passport-jwt';
 
 @Controller('training')
 export class TrainingController {
@@ -20,13 +19,5 @@ export class TrainingController {
         const jwt = this.authService.decodeJwt(token.slice(7));
         const user = await this.userService.findById(jwt.sub);
         return await this.trainingService.create(createTrainingDto.exercises, user);
-    }
-    
-    @Get()
-    @UseGuards(AuthGuard('jwt'))
-    async getTrainings(@Headers('authorization') token: string) {
-        const jwt = this.authService.decodeJwt(token.slice(7));
-        const user = await this.userService.findById(jwt.sub);
-        return user.trainings;
     }
 }
