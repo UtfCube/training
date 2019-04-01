@@ -30,4 +30,8 @@ export class UserService {
         await this.userRepository.save(user);
         return user;
     }
+
+    //async getHistoryPaged(user: User, page: number, limit: number) {
+    //    const 
+    //}
 }

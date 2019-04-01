@@ -16,10 +16,7 @@ export class History {
 
     @Column()
     repeat_number: number;
-    /*
-    @ManyToOne(type => User, user => user.history)
-    user: User;
-    */
+
     @ManyToOne(type => Exercise, exercise => exercise.history, {
       cascade: true,
       eager: true

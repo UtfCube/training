@@ -6,9 +6,10 @@ import { AuthService } from '../auth/auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entity/user.entity';
 import { History } from '../entity/history.entity';
+import { Training } from '../entity/training.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([History, User])],
+  imports: [TypeOrmModule.forFeature([History, User, Training])],
   controllers: [HistoryController],
   providers: [HistoryService, UserService, AuthService]
 })

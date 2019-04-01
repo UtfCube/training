@@ -36,17 +36,9 @@ export class User {
 
   @Column({ default: 1000 })
   balance: number;
-/*
-  @OneToMany(type => History, history => history.user, {
-      cascade: true,
-      eager: true
-  })
-  @JoinColumn()
-  history: History[];
-*/
+
   @OneToMany(type => Training, trainings => trainings.user, {
     cascade: true,
-    eager: true
   })
   @JoinColumn()
   trainings: Training[];
