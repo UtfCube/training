@@ -17,7 +17,7 @@ export const envVarsSchema: ObjectSchema = object({
   DB_HOST: string().required(),
   DB_PORT: number().required(),
   DB_USERNAME: string().required(),
-  DB_PASSWORD: string().required(),
+  DB_PASSWORD: string().default(''),
   DB_DATABASE_NAME: string().required(),
   DB_ENTITIES: string().required(),
   DB_SYNCHRONIZE: boolean().default(true)
