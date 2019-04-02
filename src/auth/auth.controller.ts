@@ -10,14 +10,16 @@ export class AuthController {
 
     @Get('vk/callback')
     @UseGuards(AuthGuard('vk'))
-    vkLoginCallback(@Req() req, @Res() res) {
+    vkLoginCallback(@Req() req) {
         const {access_token} = req.user;
-        if (access_token) {
+        return req.user;
+        /*if (access_token) {
             res.redirect('http://front-root/login/success/' + access_token)
         }
         else {
             res.redirect('http://front-root/login/failure');
         }
+        */
     }
 
     @Get('facebook')

@@ -2,16 +2,18 @@ import { server as WsServer, request as WsRequest, IMessage } from 'websocket';
 import { createServer } from 'http';
 import { ITraining } from './interfaces/training.interface';
 import { AuthService } from '../auth/auth.service';
+import { ConfigService } from '../config/config.service';
 
-const PORT: number = 9009;
+
 const authService = new AuthService();
+const configService = new ConfigService(`${process.env.NODE_ENV}.env`);
 let trainings: ITraining[] = [];
 let clients = [];
 
 var server = createServer((request, response) => {});
 
-server.listen(PORT, () => {
-    console.log((new Date()) + " Server is listening on port " + PORT);
+server.listen(configService.wsServerPort, () => {
+    console.log((new Date()) + " Server is listening on port " + configService.wsServerPort);
 });
 
 var wsServer = new WsServer({

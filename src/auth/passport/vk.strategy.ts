@@ -3,18 +3,19 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-vkontakte";
 import { AuthService } from "../auth.service";
 import { UserService } from "src/user/user.service";
-import { vkConfig } from '../config/vk-config';
 import { IUser } from "src/user/interfaces/user.interface";
+import { ConfigService } from "src/config/config.service";
 
 @Injectable()
 export class VkStrategy extends PassportStrategy(Strategy, 'vk') {
   constructor(private readonly authService: AuthService,
-    private readonly userService: UserService) {
-      super(vkConfig)
+    private readonly userService: UserService,
+    private readonly configService: ConfigService) {
+      super(configService.vkConfig);
   }
-
+  
   async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
-      try {
+    try {
         const user_info: IUser = {
             nickname: profile.username,
             firstname: profile.name.givenName,

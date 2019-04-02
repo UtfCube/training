@@ -2,15 +2,16 @@ import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-facebook";
 import { AuthService } from "../auth.service";
-import { facebookConfig } from '../config/facebook-config';
 import { UserService } from "src/user/user.service";
 import { IUser } from "src/user/interfaces/user.interface";
+import { ConfigService } from "src/config/config.service";
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor(private readonly authService: AuthService,
-    private readonly userService: UserService) {
-      super(facebookConfig)
+    private readonly userService: UserService,
+    private readonly configService: ConfigService) {
+      super(configService.facebookConfig);
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
