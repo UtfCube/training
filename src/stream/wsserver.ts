@@ -12,7 +12,7 @@ class FrameServer {
     private wsServer: WsServer; 
     
     constructor() {
-        this.configService = new ConfigService(`${process.env.NODE_ENV}.env`);
+        this.configService = new ConfigService('.env');
         this.authService = new AuthService(this.configService);
         this.trainings = [];
         this.clients = [];
