@@ -1,29 +1,28 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import { ExerciseModule } from './exercise/exercise.module';
-import { TrainingModule } from './training/training.module';
-import { HistoryModule } from './history/history.module';
-import { ConfigModule } from './config/config.module';
-import { ConfigService } from './config/config.service';
+import { Module, RequestMethod } from '@nestjs/common';
+import { CookieParserMiddleware } from '@nest-middlewares/cookie-parser';
+import { MiddlewareConsumer } from '@nestjs/common/interfaces/middleware';
+import { AuthenticationMiddleware } from 'src/common/middlewares/authentication.middleware';
+
+import { UsersModule } from './modules/users/users.module';
+import { ConfigModule } from './modules/config/config.module';
+import { ConfigService } from './modules/config/config.service';
 
 @Module({
   imports: [
-    AuthModule, 
-    UserModule, 
-    ExerciseModule, 
-    TrainingModule, 
-    HistoryModule, 
-    ConfigModule, 
+    UsersModule,
+    ConfigModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useExisting: ConfigService  
-    })
+      useExisting: ConfigService,
+    }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CookieParserMiddleware, AuthenticationMiddleware).forRoutes({
+      path: '/users',
+      method: RequestMethod.GET,
+    });
+  }
+}
