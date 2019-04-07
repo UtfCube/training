@@ -1,11 +1,5 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  JoinColumn,
-} from 'typeorm';
-import { History } from './history.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Training } from './training.entity';
 
 @Entity()
 export class Exercise {
@@ -15,6 +9,17 @@ export class Exercise {
   @Column({ length: 200 })
   name: string;
 
-  @OneToMany(type => History, history => history.exercise)
-  history: History[];
+  @Column()
+  key: string;
+
+  @Column('int')
+  count: number;
+
+  @Column('float', {
+    nullable: true,
+  })
+  result: number;
+
+  @ManyToOne(type => Exercise, excercise => excercise.training)
+  training: Training;
 }

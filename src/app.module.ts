@@ -7,11 +7,15 @@ import { AuthenticationMiddleware } from 'src/common/middlewares/authentication.
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from './modules/config/config.module';
 import { ConfigService } from './modules/config/config.service';
+import { TrainingModule } from './modules/training/training.module';
+import { ExcersiceModule } from './modules/excersice/excersice.module';
 
 @Module({
   imports: [
     UsersModule,
     ConfigModule,
+    TrainingModule,
+    ExcersiceModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useExisting: ConfigService,
@@ -20,9 +24,15 @@ import { ConfigService } from './modules/config/config.service';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CookieParserMiddleware, AuthenticationMiddleware).forRoutes({
-      path: '/users',
-      method: RequestMethod.GET,
-    });
+    consumer.apply(CookieParserMiddleware, AuthenticationMiddleware).forRoutes(
+      {
+        path: '/users',
+        method: RequestMethod.GET,
+      },
+      {
+        path: '/training',
+        method: RequestMethod.ALL,
+      },
+    );
   }
 }

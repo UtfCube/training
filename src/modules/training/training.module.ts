@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
-import { TrainingController } from './training.controller';
-import { TrainingService } from './training.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Training } from '../entity/training.entity';
-import { History } from '../entity/history.entity';
-import { Exercise } from 'src/entities/exercise.entity';
-import { User } from 'src/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { TrainingService } from './training.service';
+import { UsersService } from '../users/users.service';
+import { TrainingController } from './training.controller';
+
+import { Training } from 'src/entities/training.entity';
+import { ExcersiceService } from '../excersice/excersice.service';
+import { ExcersiceModule } from '../excersice/excersice.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Training, History, Exercise, User])],
+  imports: [UsersModule, ExcersiceModule, TypeOrmModule.forFeature([Training])],
   controllers: [TrainingController],
-  providers: [UsersService, TrainingService],
+  providers: [UsersService, TrainingService, ExcersiceService],
 })
 export class TrainingModule {}
