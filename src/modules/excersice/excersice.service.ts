@@ -18,7 +18,7 @@ export class ExcersiceService {
     return await this.list.map(entity => {
       return this.excersiseRepository.create({
         ...entity,
-        count: Math.floor(Math.random() * 10),
+        count: Math.floor(Math.random() * 10) + 5,
       });
     });
   }

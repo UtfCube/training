@@ -6,6 +6,7 @@ import { AuthenticationMiddleware } from 'src/common/middlewares/authentication.
 
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from './modules/config/config.module';
+import { EventsModule } from './modules/events/events.module';
 import { ConfigService } from './modules/config/config.service';
 import { TrainingModule } from './modules/training/training.module';
 import { ExcersiceModule } from './modules/excersice/excersice.module';
@@ -14,6 +15,7 @@ import { ExcersiceModule } from './modules/excersice/excersice.module';
   imports: [
     UsersModule,
     ConfigModule,
+    EventsModule,
     TrainingModule,
     ExcersiceModule,
     TypeOrmModule.forRootAsync({

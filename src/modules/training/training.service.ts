@@ -33,6 +33,13 @@ export class TrainingService {
     };
   }
 
+  async getById(user: User, id: number) {
+    return await this.trainingRepository.findOne({
+      id,
+      user,
+    });
+  }
+
   async create(user: User) {
     const exercises = await this.excersiceService.fullfill();
 

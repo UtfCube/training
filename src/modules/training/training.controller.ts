@@ -1,4 +1,13 @@
-import { Controller, Post, Headers, Body, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Headers,
+  Body,
+  Get,
+  Query,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
 import { AuthUser } from 'src/common/decorators/auth-user.decorator';
 import { TrainingService } from './training.service';
 import { User } from 'src/entities/user.entity';
@@ -14,6 +23,17 @@ export class TrainingController {
     @Query(new ParseQueryOptions()) options,
   ) {
     return await this.trainingService.getHistory(user, options);
+  }
+
+  @Get(':id')
+  async getTrainingById(@AuthUser() user: User, @Param('id') id: number) {
+    const training = await this.trainingService.getById(user, id);
+
+    if (!training) {
+      throw new NotFoundException();
+    }
+
+    return training;
   }
 
   @Post()
