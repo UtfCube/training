@@ -11,7 +11,10 @@ export class ExcersiceService {
   ) {}
 
   get list() {
-    return [{ name: 'Squats', key: 'SQUAT' }];
+    return [
+      { name: 'Squats', key: 'SQUAT' },
+      { name: 'Exercise X', key: 'EXERCISE_X' },
+    ];
   }
 
   async fullfill(): Promise<Exercise[]> {
@@ -21,5 +24,43 @@ export class ExcersiceService {
         count: Math.floor(Math.random() * 10) + 5,
       });
     });
+  }
+
+  async updateResult(trainingId: number, exerciseId: number) {
+    try {
+      const exercise = await this.excersiseRepository.findOneOrFail({
+        id: exerciseId,
+        training: {
+          id: trainingId,
+        },
+      });
+
+      exercise.result = exercise.result + 1;
+
+      return await this.excersiseRepository.save(exercise);
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async storeNewFrame(trainingId: number, exerciseId: number, frame: any) {
+    try {
+      const exercise = await this.excersiseRepository.findOneOrFail({
+        id: exerciseId,
+        training: {
+          id: trainingId,
+        },
+      });
+
+      if (!exercise.rawFrames) {
+        exercise.rawFrames = [];
+      }
+
+      exercise.rawFrames.push(JSON.stringify(frame));
+
+      return await this.excersiseRepository.save(exercise);
+    } catch (err) {
+      throw err;
+    }
   }
 }

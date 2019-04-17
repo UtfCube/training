@@ -19,6 +19,16 @@ export class Training {
   @CreateDateColumn()
   dateCreated: Date;
 
+  @Column('timestamp', {
+    nullable: true,
+  })
+  dateStarted: Date;
+
+  @Column('timestamp', {
+    nullable: true,
+  })
+  dateEnded: Date;
+
   @Column('float', {
     nullable: true,
   })
@@ -30,6 +40,9 @@ export class Training {
   })
   @JoinColumn()
   exercises: Exercise[];
+
+  @Column()
+  userId: number;
 
   @ManyToOne(type => User, user => user.trainings)
   user: User;

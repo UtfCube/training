@@ -15,10 +15,16 @@ export class Exercise {
   @Column('int')
   count: number;
 
-  @Column('float', {
-    nullable: true,
+  @Column('int', {
+    default: 0,
   })
   result: number;
+
+  @Column('text', {
+    nullable: true,
+    array: true,
+  })
+  rawFrames: string[];
 
   @ManyToOne(type => Exercise, excercise => excercise.training)
   training: Training;

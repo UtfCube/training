@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from 'src/entities/user.entity';
@@ -17,7 +17,7 @@ export class TrainingService {
   async getHistory(user: User, { limit = 20, page = 1 }) {
     const [trainings, total] = await this.trainingRepository.findAndCount({
       where: {
-        user: user,
+        user,
       },
       order: {
         dateCreated: 'DESC',
@@ -48,6 +48,36 @@ export class TrainingService {
       exercises,
     });
 
+    return await this.trainingRepository.save(training);
+  }
+
+  async startTraining(trainingId: number) {
+    return await this.trainingRepository.update(trainingId, {
+      dateStarted: new Date(),
+    });
+  }
+
+  async stopTraining(trainingId: number) {
+    const training = await this.trainingRepository.findOne(trainingId);
+
+    if (!training) {
+      throw new NotFoundException('Training not found');
+    }
+
+    const exercises = await training.exercises;
+
+    const score = exercises.reduce((acc, ex) => {
+      acc += ex.result;
+      return acc;
+    }, 0);
+
+    return await this.trainingRepository.update(trainingId, {
+      score,
+      dateEnded: new Date(),
+    });
+  }
+
+  async updateScore(training: Training) {
     return await this.trainingRepository.save(training);
   }
 }
