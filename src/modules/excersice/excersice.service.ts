@@ -13,7 +13,7 @@ export class ExcersiceService {
   get list() {
     return [
       { name: 'Squats', key: 'SQUAT' },
-      { name: 'Exercise X', key: 'EXERCISE_X' },
+      // { name: 'Exercise X', key: 'EXERCISE_X' },
     ];
   }
 

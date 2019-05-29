@@ -23,6 +23,7 @@ export class ConfigService {
       database: this.envConfig.DB_DATABASE_NAME,
       entities: this.envConfig.DB_ENTITIES.split(' '),
       synchronize: Boolean(this.envConfig.DB_SYNCHRONIZE),
+      // logging: true,
     };
   }
 }

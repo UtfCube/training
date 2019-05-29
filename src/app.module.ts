@@ -4,10 +4,13 @@ import { CookieParserMiddleware } from '@nest-middlewares/cookie-parser';
 import { MiddlewareConsumer } from '@nestjs/common/interfaces/middleware';
 import { AuthenticationMiddleware } from 'src/common/middlewares/authentication.middleware';
 
+import { ConfigService } from './modules/config/config.service';
+
 import { UsersModule } from './modules/users/users.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { ConfigModule } from './modules/config/config.module';
 import { EventsModule } from './modules/events/events.module';
-import { ConfigService } from './modules/config/config.service';
+import { PeriodModule } from './modules/period/period.module';
 import { TrainingModule } from './modules/training/training.module';
 import { ExcersiceModule } from './modules/excersice/excersice.module';
 import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
@@ -15,8 +18,10 @@ import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
 @Module({
   imports: [
     UsersModule,
+    TasksModule,
     ConfigModule,
     EventsModule,
+    PeriodModule,
     TrainingModule,
     ExcersiceModule,
     LeaderboardModule,
@@ -35,6 +40,10 @@ export class AppModule {
       },
       {
         path: '/training',
+        method: RequestMethod.ALL,
+      },
+      {
+        path: '/period',
         method: RequestMethod.ALL,
       },
       {

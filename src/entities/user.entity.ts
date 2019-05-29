@@ -7,8 +7,13 @@ import {
   Index,
   CreateDateColumn,
   BaseEntity,
+  BeforeInsert,
 } from 'typeorm';
+
 import { Training } from './training.entity';
+import { Period } from './period.entity';
+
+const INITIAL_BALANCE = 1000;
 
 @Entity()
 export class User extends BaseEntity {
@@ -40,6 +45,12 @@ export class User extends BaseEntity {
   @Column()
   picture: string;
 
+  @Column('double precision', {
+    nullable: false,
+    default: 2000,
+  })
+  balance: number;
+
   @CreateDateColumn()
   dateCreated: Date;
 
@@ -48,4 +59,10 @@ export class User extends BaseEntity {
   })
   @JoinColumn()
   trainings: Training[];
+
+  @OneToMany(type => Period, periods => periods.user, {
+    cascade: true,
+  })
+  @JoinColumn()
+  periods: Period[];
 }
