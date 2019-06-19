@@ -74,7 +74,7 @@ export class PeriodService {
 
     const userBalance = await user.balance;
 
-    if (userBalance < PeriodService.periodCost) {
+    if (userBalance < activePrice) {
       throw new BadRequestException('Insufficient balance');
     }
 
