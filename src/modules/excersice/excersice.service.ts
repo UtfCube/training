@@ -11,14 +11,10 @@ export class ExcersiceService {
   ) {}
 
   get list() {
-<<<<<<< HEAD
-    return [{ name: 'Squats', key: 'SQUAT' }];
-=======
     return [
       { name: 'Squats', key: 'SQUAT' },
       // { name: 'Exercise X', key: 'EXERCISE_X' },
     ];
->>>>>>> refactoring
   }
 
   async fullfill(): Promise<Exercise[]> {
@@ -29,8 +25,6 @@ export class ExcersiceService {
       });
     });
   }
-<<<<<<< HEAD
-=======
 
   async updateResult(trainingId: number, exerciseId: number) {
     try {
@@ -69,5 +63,4 @@ export class ExcersiceService {
       throw err;
     }
   }
->>>>>>> refactoring
 }

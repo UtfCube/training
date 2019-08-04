@@ -19,8 +19,6 @@ export class Training {
   @CreateDateColumn()
   dateCreated: Date;
 
-<<<<<<< HEAD
-=======
   @Column('timestamp', {
     nullable: true,
   })
@@ -31,7 +29,6 @@ export class Training {
   })
   dateEnded: Date;
 
->>>>>>> refactoring
   @Column('float', {
     nullable: true,
   })
@@ -44,12 +41,9 @@ export class Training {
   @JoinColumn()
   exercises: Exercise[];
 
-<<<<<<< HEAD
-=======
   @Column()
   userId: number;
 
->>>>>>> refactoring
   @ManyToOne(type => User, user => user.trainings)
   user: User;
 }

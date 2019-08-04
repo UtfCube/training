@@ -4,14 +4,6 @@ import { CookieParserMiddleware } from '@nest-middlewares/cookie-parser';
 import { MiddlewareConsumer } from '@nestjs/common/interfaces/middleware';
 import { AuthenticationMiddleware } from 'src/common/middlewares/authentication.middleware';
 
-<<<<<<< HEAD
-import { UsersModule } from './modules/users/users.module';
-import { ConfigModule } from './modules/config/config.module';
-import { EventsModule } from './modules/events/events.module';
-import { ConfigService } from './modules/config/config.service';
-import { TrainingModule } from './modules/training/training.module';
-import { ExcersiceModule } from './modules/excersice/excersice.module';
-=======
 import { ConfigService } from './modules/config/config.service';
 
 import { UsersModule } from './modules/users/users.module';
@@ -22,17 +14,10 @@ import { PeriodModule } from './modules/period/period.module';
 import { TrainingModule } from './modules/training/training.module';
 import { ExcersiceModule } from './modules/excersice/excersice.module';
 import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
->>>>>>> refactoring
 
 @Module({
   imports: [
     UsersModule,
-<<<<<<< HEAD
-    ConfigModule,
-    EventsModule,
-    TrainingModule,
-    ExcersiceModule,
-=======
     TasksModule,
     ConfigModule,
     EventsModule,
@@ -40,7 +25,6 @@ import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
     TrainingModule,
     ExcersiceModule,
     LeaderboardModule,
->>>>>>> refactoring
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useExisting: ConfigService,
@@ -58,8 +42,6 @@ export class AppModule {
         path: '/training',
         method: RequestMethod.ALL,
       },
-<<<<<<< HEAD
-=======
       {
         path: '/period',
         method: RequestMethod.ALL,
@@ -68,7 +50,6 @@ export class AppModule {
         path: '/leaderboard',
         method: RequestMethod.ALL,
       },
->>>>>>> refactoring
     );
   }
 }
