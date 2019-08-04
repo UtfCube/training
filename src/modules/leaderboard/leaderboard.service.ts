@@ -14,6 +14,34 @@ import { User } from 'src/entities/user.entity';
 import { Training } from 'src/entities/training.entity';
 import { Period } from 'src/entities/period.entity';
 
+const getWeek = function (date: Date, dowOffset: number = 0) {
+  /*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
+  
+      dowOffset = typeof(dowOffset) == 'number' ? dowOffset : 0; //default dowOffset to zero
+      let newYear = new Date(date.getFullYear(),0,1);
+      let day = newYear.getDay() - dowOffset; //the day of week the year begins on
+      day = (day >= 0 ? day : day + 7);
+      let daynum = Math.floor((date.getTime() - newYear.getTime() - 
+      (date.getTimezoneOffset()-newYear.getTimezoneOffset())*60000)/86400000) + 1;
+      let weeknum;
+      //if the year starts before the middle of a week
+      if(day < 4) {
+          weeknum = Math.floor((daynum+day-1)/7) + 1;
+          if(weeknum > 52) {
+              let nYear = new Date(date.getFullYear() + 1,0,1);
+              let nday = nYear.getDay() - dowOffset;
+              nday = nday >= 0 ? nday : nday + 7;
+              /*if the next year starts before the middle of
+                the week, it is week #1 of that year*/
+              weeknum = nday < 4 ? 1 : 53;
+          }
+      }
+      else {
+          weeknum = Math.floor((daynum+day-1)/7);
+      }
+      return weeknum;
+  };
+
 interface ILeaderboardResult {
   score: number;
   user: User;
@@ -21,9 +49,9 @@ interface ILeaderboardResult {
 
 interface ILeaderboardResultResponse {
   list: ILeaderboardResult[];
-  endOfMonth: Date;
-  startOfMonth: Date;
-  daysInMonth: number;
+  endOfWeek: Date;
+  startOfWeek: Date;
+  daysInWeek: number;
 }
 
 @Injectable()
@@ -36,14 +64,24 @@ export class LeaderboardService {
   ) {}
 
   async getList(): Promise<ILeaderboardResultResponse> {
+    /*
     const startOfMonth = Moment()
       .startOf('month')
       .toDate();
     const endOfMonth = Moment()
       .endOf('month')
       .toDate();
-    const daysInMonth = Moment().daysInMonth();
-    const currentMonth = new Date().getMonth();
+      */
+    const startOfWeek = Moment()
+      .startOf('week')
+      .toDate();
+    const endOfWeek = Moment()
+      .endOf('week')
+      .toDate();
+    //const daysInMonth = Moment().daysInMonth();
+    const daysInWeek = 7;
+    //const currentMonth = new Date().getMonth();
+    const currentWeek = getWeek(new Date());
 
     const periods = await this.periodRepository.find({
       active: true,
@@ -52,9 +90,9 @@ export class LeaderboardService {
     if (periods.length === 0) {
       return {
         list: [],
-        startOfMonth,
-        endOfMonth,
-        daysInMonth,
+        startOfWeek,
+        endOfWeek,
+        daysInWeek,
       };
     }
 
@@ -66,8 +104,8 @@ export class LeaderboardService {
       where: {
         userId: In(users),
         score: MoreThan(0),
-        dateEnded: LessThanOrEqual(endOfMonth),
-        dateStarted: MoreThanOrEqual(startOfMonth),
+        dateEnded: LessThanOrEqual(endOfWeek),
+        dateStarted: MoreThanOrEqual(startOfWeek),
       },
     });
 
@@ -87,13 +125,13 @@ export class LeaderboardService {
     const leaderboard = Object.values(activeUsers).map(info => {
       const userResults = results.filter(r => r.user.id === info.user.id);
 
-      for (let day = 1; day <= daysInMonth; day++) {
+      for (let day = 0; day < daysInWeek; day++) {
         const dayResult = userResults.find(res => {
           return (
-            res.dateStarted.getMonth() === currentMonth &&
-            res.dateEnded.getMonth() === currentMonth &&
-            res.dateStarted.getDate() === day &&
-            res.dateEnded.getDate() === day
+            getWeek(res.dateStarted) === currentWeek &&
+            getWeek(res.dateEnded) === currentWeek &&
+            res.dateStarted.getDay() === day &&
+            res.dateEnded.getDay() === day
           );
         });
 
@@ -109,9 +147,9 @@ export class LeaderboardService {
       list: leaderboard.sort((a, b) => {
         return b.score - a.score;
       }),
-      startOfMonth,
-      endOfMonth,
-      daysInMonth,
+      startOfWeek,
+      endOfWeek,
+      daysInWeek,
     };
   }
 }
