@@ -2,7 +2,6 @@ import * as Moment from 'moment';
 import { Injectable } from '@nestjs/common';
 import { PeriodService } from 'src/modules/period/period.service';
 import { LeaderboardService } from 'src/modules/leaderboard/leaderboard.service';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 import { getConnection } from 'typeorm';
 
 @Injectable()
@@ -25,8 +24,48 @@ export class GameTask {
     }, 1000);
   }
 
+  async disqualifyForEmptyTrainings() {
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const { list } = await this.leaderboardService.getList();
+
+      for (const result of list) {
+        if (result.score === 0) {
+          console.log(
+            `User ${
+              result.user.id
+            } has no trainings in active period, disqualifying...`,
+          );
+
+          const userActivePeriod = await this.periodService.getActivePeriod(
+            result.user,
+          );
+
+          userActivePeriod.active = false;
+          await queryRunner.manager.save(userActivePeriod);
+        }
+      }
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async distributeWinnings() {
-    const periods = await this.periodService.getMonthPeriods();
+    await this.disqualifyForEmptyTrainings();
+    const periods = await this.periodService.getWeekPeriods();
+
+    if (periods.length === 0) {
+      console.log('No active periods, waiting...');
+      return;
+    }
 
     const totalBank = periods.reduce((acc, period) => {
       acc += period.price;
@@ -43,26 +82,23 @@ export class GameTask {
     const toDistribution = totalBank - totalLose;
     const multiplier = totalBank / toDistribution;
 
-    const { list } = await this.leaderboardService.getList();
-
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+      const { list } = await this.leaderboardService.getList();
+
       for (const winner of list) {
         const winnerActivePeriod = await this.periodService.getActivePeriod(
           winner.user,
         );
         const winning = winnerActivePeriod.price * multiplier;
-
         winner.user.balance += winning;
         winnerActivePeriod.active = false;
-
         await queryRunner.manager.save(winner.user);
         await queryRunner.manager.save(winnerActivePeriod);
-
         console.log(`User ${winner.user.id} wins ${winning}`);
       }
       await queryRunner.commitTransaction();
@@ -75,13 +111,13 @@ export class GameTask {
 
   async run() {
     const currentDate = Moment();
-    const endOfMonth = Moment().endOf('month');
+    const endOfWeek = Moment().endOf('isoWeek');
 
     const needWork =
-      currentDate.date() === endOfMonth.date() &&
-      currentDate.hours() === endOfMonth.hours() &&
-      currentDate.minutes() === endOfMonth.minutes() &&
-      currentDate.seconds() === endOfMonth.seconds();
+      currentDate.date() === endOfWeek.date() &&
+      currentDate.hours() === endOfWeek.hours() &&
+      currentDate.minutes() === endOfWeek.minutes() &&
+      currentDate.seconds() === endOfWeek.seconds();
 
     if (needWork) {
       await this.distributeWinnings();

@@ -32,11 +32,8 @@ export class PeriodService {
 
   async getPrice(user: User) {
     const daysInWeek = 7;
-    const currentDayNum = Moment().day();
-    const multiplier = (daysInWeek - currentDayNum) / daysInWeek;
-    //const daysInMonth = Moment().daysInMonth();
-    //const currentDay = Moment().date();
-    //const multiplier = (daysInWeek - currentDayNum + 1) / daysInWeek;
+    const currentDayNum = Moment().isoWeekday();
+    const multiplier = (daysInWeek - currentDayNum + 1) / daysInWeek;
     const k = Math.pow(10, 2);
     return Math.ceil(multiplier * PeriodService.periodCost * k) / k;
   }
@@ -49,11 +46,9 @@ export class PeriodService {
     });
   }
 
-  async getMonthPeriods() {
-    //const endOfMonth = Moment().endOf('month');
-    //const startOfMonth = Moment().startOf('month');
-    const endOfWeek = Moment().endOf('week');
-    const startOfWeek = Moment().startOf('week');
+  async getWeekPeriods() {
+    const endOfWeek = Moment().endOf('isoWeek');
+    const startOfWeek = Moment().startOf('isoWeek');
 
     return await this.periodRepository.find({
       where: {
@@ -94,7 +89,7 @@ export class PeriodService {
         userId: user.id,
         price: activePrice,
         dateStarted: new Date(),
-        expiryDate: Moment().endOf('week'),
+        expiryDate: Moment().endOf('isoWeek'),
       });
 
       user.balance = userBalance - activePrice;
