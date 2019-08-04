@@ -2,16 +2,29 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+<<<<<<< HEAD
   WsResponse,
+=======
+>>>>>>> refactoring
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 
 import { Client, Server } from 'socket.io';
 import { User } from 'src/entities/user.entity';
+<<<<<<< HEAD
 
 const connected = {};
 const frames = {};
+=======
+import { UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { TrainingService } from '../training/training.service';
+import { Training } from 'src/entities/training.entity';
+import { ExcersiceService } from '../excersice/excersice.service';
+
+const frames = {};
+const connected = {};
+>>>>>>> refactoring
 
 export const pointsOfInterest = [
   'nose',
@@ -107,8 +120,13 @@ export function predictExercise(frames) {
       const leftY = currentParabola.left.y;
       const rightY = currentParabola.right.y;
 
+<<<<<<< HEAD
       const prevLeftY = prevParabola.f(leftX);
       const prevRightY = prevParabola.f(rightX);
+=======
+      // const prevLeftY = prevParabola.f(leftX);
+      // const prevRightY = prevParabola.f(rightX);
+>>>>>>> refactoring
 
       const diffLeft = prevParabola.left.y - leftY;
       const diffRIght = prevParabola.right.y - rightY;
@@ -135,11 +153,19 @@ export function predictExercise(frames) {
         break;
       }
 
+<<<<<<< HEAD
       console.log(`
       X: ${leftX} : ${rightX}
       Y: ${leftY} : ${rightY}
       P: ${prevLeftY} : ${prevRightY}
       `);
+=======
+      // console.log(`
+      // X: ${leftX} : ${rightX}
+      // Y: ${leftY} : ${rightY}
+      // P: ${prevLeftY} : ${prevRightY}
+      // `);
+>>>>>>> refactoring
     }
 
     step++;
@@ -155,6 +181,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
+<<<<<<< HEAD
   // @SubscribeMessage('events')
   // findAll(client: Client, data: any): Observable<WsResponse<number>> {
   //   return from([1, 2, 3]).pipe(map(item => ({ event: 'events', data: item })));
@@ -165,21 +192,64 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const maxFramesLength = 14;
     const userFrames = frames[client.id];
     const len = userFrames.push(frame);
+=======
+  constructor(
+    private readonly trainingService: TrainingService,
+    private readonly exerciseService: ExcersiceService,
+  ) {}
+
+  @SubscribeMessage('frame')
+  async registerUser(client: Client, data: any): Promise<any> {
+    if (!data.trainId || !data.exerciseId || !data.frame) {
+      return null;
+    }
+
+    const maxFramesLength = 14;
+    const userFrames = frames[client.id];
+    const len = userFrames.push(data.frame);
+>>>>>>> refactoring
 
     if (len > maxFramesLength) {
       frames[client.id] = frames[client.id].slice(1);
     }
 
+<<<<<<< HEAD
+=======
+    const { trainId, exerciseId, frame } = data;
+    await this.exerciseService.storeNewFrame(trainId, exerciseId, frame);
+>>>>>>> refactoring
     const prediction = predictExercise(frames[client.id]);
 
     if (prediction) {
       frames[client.id] = frames[client.id].slice(prediction.right.x);
+<<<<<<< HEAD
       return prediction;
+=======
+
+      const exercise = await this.exerciseService.updateResult(
+        trainId,
+        exerciseId,
+      );
+
+      return { result: exercise.result };
+>>>>>>> refactoring
     }
 
     return null;
   }
 
+<<<<<<< HEAD
+=======
+  @SubscribeMessage('finish')
+  async finishTraining(client: Client, data: any): Promise<any> {
+    if (!data.trainId) {
+      throw new BadRequestException('Train id is not defined');
+    }
+
+    return await this.trainingService.stopTraining(data.trainId);
+  }
+
+>>>>>>> refactoring
   async handleConnection(socket) {
     try {
       const user = await User.findOne({
@@ -187,6 +257,27 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         email: socket.handshake.query.email,
       });
 
+<<<<<<< HEAD
+=======
+      const trainId = socket.handshake.query.trainId;
+
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+
+      if (!trainId) {
+        throw new BadRequestException('Train id is not defined');
+      }
+
+      const training = await this.trainingService.getById(user, trainId);
+
+      if (!training) {
+        throw new BadRequestException('Training is not found');
+      }
+
+      await this.trainingService.startTraining(trainId);
+
+>>>>>>> refactoring
       frames[socket.id] = [];
       connected[socket.id] = user;
     } catch (err) {
@@ -195,6 +286,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(socket) {
+<<<<<<< HEAD
+=======
+    await this.trainingService.stopTraining(socket.handshake.query.trainId);
+>>>>>>> refactoring
     delete frames[socket.id];
     delete connected[socket.id];
   }
